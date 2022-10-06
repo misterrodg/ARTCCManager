@@ -8,7 +8,6 @@ import { Head, Link, useForm } from '@inertiajs/inertia-react';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
         email: '',
         password: '',
         password_confirmation: '',
@@ -28,6 +27,8 @@ export default function Register() {
         e.preventDefault();
 
         post(route('register'));
+    firstName: "",
+    lastName: "",
     };
 
     return (
@@ -35,22 +36,6 @@ export default function Register() {
             <Head title="Register" />
 
             <form onSubmit={submit}>
-                <div>
-                    <InputLabel forInput="name" value="Name" />
-
-                    <TextInput
-                        type="text"
-                        name="name"
-                        value={data.name}
-                        className="mt-1 block w-full"
-                        autoComplete="name"
-                        isFocused={true}
-                        handleChange={onHandleChange}
-                        required
-                    />
-
-                    <InputError message={errors.name} className="mt-2" />
-                </div>
 
                 <div className="mt-4">
                     <InputLabel forInput="email" value="Email" />
@@ -111,4 +96,29 @@ export default function Register() {
             </form>
         </GuestLayout>
     );
+        <div>
+          <InputLabel forInput="firstName" value="First Name" />
+          <TextInput
+            type="text"
+            name="firstName"
+            value={data.firstName}
+            className="mt-1 block w-full"
+            autoComplete="firstName"
+            isFocused={true}
+            handleChange={onHandleChange}
+            required
+          />
+        </div>
+        <div className="mt-4">
+          <InputLabel forInput="lastName" value="Last Name" />
+          <TextInput
+            type="text"
+            name="lastName"
+            value={data.lastName}
+            className="mt-1 block w-full"
+            autoComplete="lastName"
+            handleChange={onHandleChange}
+            required
+          />
+        </div>
 }
