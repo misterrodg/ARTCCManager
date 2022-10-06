@@ -57,3 +57,6 @@ The functionality of ARTCC Manager will also be ported there.
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+The included font is licensed under the SIL Open Font License, Version 1.1.
+This license is available with a FAQ at [SIL.org](http://scripts.sil.org/OFL).
