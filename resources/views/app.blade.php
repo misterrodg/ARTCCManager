@@ -6,13 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title inertia>{{ config('app.name') }}</title>
-
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <!-- Styles -->
   <style>
     body {
       overscroll-behavior-y: none;
     }
   </style>
-
   <!-- Scripts -->
   @routes
   @viteReactRefresh
@@ -20,7 +23,7 @@
   @inertiaHead
 </head>
 
-<body class="bg-white min-h-screen">
+<body class="bg-amblack min-h-screen">
   @inertia
 </body>
 
