@@ -11,35 +11,35 @@ during FE absences, I developed ARTCC Manager.
 
 ## Features
 
--   Manages ARTCC data:
-    -   Imports FAA CIFP and NASR data
-    -   Builds Airport, Runway, Nav data from NASR
-    -   Builds SID/STAR/IAP data from CIFP as Diagrams/Vidmaps
-    -   Builds M/P/R/W (Restrictive) Airspace from CIFP
--   Supports VRC, vSTARS and vERAM controller clients
--   Supports TWRTrainer as a training client
+- Manages ARTCC data:
+  - Imports FAA CIFP and NASR data
+  - Builds Airport, Runway, Nav data from NASR
+  - Builds SID/STAR/IAP data from CIFP as Diagrams/Vidmaps
+  - Builds M/P/R/W (Restrictive) Airspace from CIFP
+- Supports VRC, vSTARS and vERAM controller clients
+- Supports TWRTrainer as a training client
 
 ## Roadmap
 
--   [x] Initial Functionality
-    -   [x] FAA Data Import/Processing
-        -   [x] CIFP/NASR Data
-        -   [x] Preferred Routes
-        -   [x] Coded Departure Routes
-        -   [ ] LOA Route Management
-    -   [x] VRC File Build Capability
-    -   [x] vSTARS File Build Capability
-    -   [x] vERAM File Build Capability
--   [ ] Advanced Functionality
-    -   [x] vSTARS FAA-Compliant MSAW Volumes
-    -   [x] Runway/Config Manager
-    -   [ ] Ad Hoc Vidmap Creator/Editor
--   [x] Admin Panel
--   [ ] EuroScope Functionality
-    -   [ ] ES File Build Capability
-    -   [ ] ES Simulation File Build Capability
--   [ ] CRC Functionality
-    -   [ ] GeoJSON File Build Capability
+- [x] Initial Functionality
+  - [x] FAA Data Import/Processing
+    - [x] CIFP/NASR Data
+    - [x] Preferred Routes
+    - [x] Coded Departure Routes
+    - [ ] LOA Route Management
+  - [x] VRC File Build Capability
+  - [x] vSTARS File Build Capability
+  - [x] vERAM File Build Capability
+- [ ] Advanced Functionality
+  - [x] vSTARS FAA-Compliant MSAW Volumes
+  - [x] Runway/Config Manager
+  - [ ] Ad Hoc Vidmap Creator/Editor
+- [x] Admin Panel
+- [ ] EuroScope Functionality
+  - [ ] ES File Build Capability
+  - [ ] ES Simulation File Build Capability
+- [ ] CRC Functionality
+  - [ ] GeoJSON File Build Capability
 
 ## Frontend
 
