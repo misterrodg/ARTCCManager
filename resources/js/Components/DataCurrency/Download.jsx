@@ -4,7 +4,7 @@ import { GiRadarSweep } from "react-icons/gi";
 
 import PrimaryButton from "../PrimaryButton";
 
-const CIFPDownload = ({
+const Download = ({
   dataType,
   faaDataObject,
   handleCurrency,
@@ -92,4 +92,4 @@ const CIFPDownload = ({
   );
 };
 
-export default CIFPDownload;
+export default Download;
