@@ -17,22 +17,19 @@ const Download = ({
   const LOCAL_DOWNLOAD_URL = `/${dataType.toLowerCase()}/download`;
   const LOCAL_DECOMPRESS_URL = `/${dataType.toLowerCase()}/decompress`;
 
+  const postData = {
+    editionName: faaDataObject.editionName,
+    editionDate: faaDataObject.editionDate,
+    editionNumber: faaDataObject.editionNumber,
+    editionUrl: faaDataObject.editionUrl,
+    airacId: faaDataObject.airacId,
+  };
+
   async function getDownload() {
     setSpin(true);
     setStatusMessage("Downloading");
-    const postData = {
-      editionName: faaDataObject.editionName,
-      editionDate: faaDataObject.editionDate,
-      editionNumber: faaDataObject.editionNumber,
-      editionUrl: faaDataObject.editionUrl,
-      airacId: faaDataObject.airacId,
-    };
     try {
-      const res = await axios.post(`${LOCAL_DOWNLOAD_URL}`, postData, {
-        headers: {
-          "x-access-token": "token-value",
-        },
-      });
+      const res = await axios.post(`${LOCAL_DOWNLOAD_URL}`, postData);
       if (res.data.success === true) {
         decompressDownload();
       } else {
@@ -45,19 +42,8 @@ const Download = ({
 
   async function decompressDownload() {
     setStatusMessage("Decompressing");
-    const postData = {
-      editionName: faaDataObject.editionName,
-      editionDate: faaDataObject.editionDate,
-      editionNumber: faaDataObject.editionNumber,
-      editionUrl: faaDataObject.editionUrl,
-      airacId: faaDataObject.airacId,
-    };
     try {
-      const res = await axios.post(`${LOCAL_DECOMPRESS_URL}`, postData, {
-        headers: {
-          "x-access-token": "token-value",
-        },
-      });
+      const res = await axios.post(`${LOCAL_DECOMPRESS_URL}`, postData);
       if (res.data.success === true) {
         handleCurrency(postData);
         setStatusMessage("Success");
@@ -66,7 +52,7 @@ const Download = ({
         handleErrorMessage(res.data.message);
       }
     } catch {
-      handleErrorMessage("Download failed.");
+      handleErrorMessage("Decompression failed.");
     }
   }
 
