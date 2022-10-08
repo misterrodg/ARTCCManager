@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FrontendController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -22,9 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     return Inertia::render('Facilities');
   })->name('facilities');
 
-  Route::get('/files', function () {
-    return Inertia::render('Files');
-  })->name('files');
+  Route::get('/files', [FrontendController::class, 'files'])->name('files');
 });
 
 require __DIR__ . '/auth.php';
