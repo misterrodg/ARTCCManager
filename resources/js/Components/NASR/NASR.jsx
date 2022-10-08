@@ -21,8 +21,8 @@ const NASR = ({ nasrCurrent, nasrNext }) => {
   const [nextFetch, setNextFetch] = useState(false);
   const [processing, setProcessing] = useState(false);
 
-  const currentAge = 0;
-  const nextAge = 0;
+  let currentAge = 0;
+  let nextAge = 0;
   const currentStart = DateTime.fromISO(nasrCurrent?.edition_date);
   const nextStart = DateTime.fromISO(nasrNext?.edition_date);
   if (currentStart.isValid && nextStart.isValid) {
