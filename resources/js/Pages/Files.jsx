@@ -1,17 +1,28 @@
 import MainLayout from "@/Layouts/MainLayout";
 import Container from "@/Components/Main/Container";
-import CIFP from "@/Components/CIFP/CIFP";
-import NASR from "@/Components/NASR/NASR";
+import Currency from "@/Components/DataCurrency/Currency";
 
 const Files = (props) => {
   return (
     <MainLayout title="Files" auth={props.auth} errors={props.errors}>
       <Container>
-        <div className="mb-2">
-          <CIFP cifpCurrent={props.cifpCurrent} cifpNext={props.cifpNext} />
+        <div className="mb-4">
+          <Currency
+            dataType="cifp"
+            dataCurrent={props.cifpCurrent}
+            dataNext={props.cifpNext}
+            dataDownloadCurrent={props.cifpDownloadCurrent}
+            dataDownloadNext={props.cifpDownloadNext}
+          />
         </div>
-        <div className="mb-2">
-          <NASR nasrCurrent={props.nasrCurrent} nasrNext={props.nasrNext} />
+        <div className="mb-4">
+          <Currency
+            dataType="nasr"
+            dataCurrent={props.nasrCurrent}
+            dataNext={props.nasrNext}
+            dataDownloadCurrent={props.nasrDownloadCurrent}
+            dataDownloadNext={props.nasrDownloadNext}
+          />
         </div>
       </Container>
     </MainLayout>

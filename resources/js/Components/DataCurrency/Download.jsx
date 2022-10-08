@@ -4,26 +4,31 @@ import { GiRadarSweep } from "react-icons/gi";
 
 import PrimaryButton from "../PrimaryButton";
 
-const LOCAL_CIFP_DOWNLOAD_URL = "/cifp/download";
-const LOCAL_CIFP_DECOMPRESS_URL = "/cifp/decompress";
-
-const CIFPDownload = ({ faaDataObject, handleErrorMessage }) => {
+const CIFPDownload = ({
+  dataType,
+  faaDataObject,
+  handleCurrency,
+  handleErrorMessage,
+}) => {
   const [processing, setProcessing] = useState(false);
   const [spin, setSpin] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
+
+  const LOCAL_DOWNLOAD_URL = `/${dataType.toLowerCase()}/download`;
+  const LOCAL_DECOMPRESS_URL = `/${dataType.toLowerCase()}/decompress`;
 
   async function getDownload() {
     setSpin(true);
     setStatusMessage("Downloading");
     const postData = {
-      version: faaDataObject.editionName,
+      editionName: faaDataObject.editionName,
       editionDate: faaDataObject.editionDate,
       editionNumber: faaDataObject.editionNumber,
       editionUrl: faaDataObject.editionUrl,
       airacId: faaDataObject.airacId,
     };
     try {
-      const res = await axios.post(`${LOCAL_CIFP_DOWNLOAD_URL}`, postData, {
+      const res = await axios.post(`${LOCAL_DOWNLOAD_URL}`, postData, {
         headers: {
           "x-access-token": "token-value",
         },
@@ -41,19 +46,20 @@ const CIFPDownload = ({ faaDataObject, handleErrorMessage }) => {
   async function decompressDownload() {
     setStatusMessage("Decompressing");
     const postData = {
-      version: faaDataObject.editionName,
+      editionName: faaDataObject.editionName,
       editionDate: faaDataObject.editionDate,
       editionNumber: faaDataObject.editionNumber,
       editionUrl: faaDataObject.editionUrl,
       airacId: faaDataObject.airacId,
     };
     try {
-      const res = await axios.post(`${LOCAL_CIFP_DECOMPRESS_URL}`, postData, {
+      const res = await axios.post(`${LOCAL_DECOMPRESS_URL}`, postData, {
         headers: {
           "x-access-token": "token-value",
         },
       });
       if (res.data.success === true) {
+        handleCurrency(postData);
         setStatusMessage("Success");
         setSpin(false);
       } else {

@@ -16,9 +16,9 @@ class NASR
   public $airacId;
   public $faaResponse;
 
-  public function __construct(?string $version = "current", ?string $date = "now", ?string $editionNumber = "", ?string $editionUrl = "", ?string $airacId = "")
+  public function __construct(?string $editionName = "current", ?string $date = "now", ?string $editionNumber = "", ?string $editionUrl = "", ?string $airacId = "")
   {
-    $this->editionName = strtoupper($version);
+    $this->editionName = strtoupper($editionName);
     $this->editionDate = new \DateTime($date);
     $this->editionNumber = $editionNumber;
     $this->editionUrl = $editionUrl;
@@ -79,7 +79,7 @@ class NASR
   {
     $localNasrDir = "nasr/" . $this->editionName . "/";
     $localZIP = $localNasrDir . "FAANASR.zip";
-    $airacFile = $localNasrDir . "AIRAC";
+    $airacFile = $localNasrDir . "AIRAC.json";
     //Set up responses
     $code = 500;
     $message = "Failed";
@@ -100,7 +100,8 @@ class NASR
     //If unzipped, delete ZIP
     if ($zipResponse->isSuccess) {
       //Add AIRAC Data
-      Storage::put($airacFile, $this->airacId);
+      Storage::delete($airacFile);
+      Storage::put($airacFile, json_encode($this));
       //Delete ZIP
       Storage::delete($localZIP);
       //Update Response
@@ -113,7 +114,7 @@ class NASR
     return $response;
   }
   /*
-    public function importNASRData(string $version = 'current', bool $force = false)
+    public function importNASRData(string $editionName = 'current', bool $force = false)
     {
         $localNasrDir = "/assets/nasr/";
         $nasrDir = new DirPath($localNasrDir);
@@ -128,8 +129,8 @@ class NASR
         }
         $date = Carbon\Carbon::now()->startOfDay();
         $updateRequired = (count($nasrFiles) == 0 || (empty($nasrCurrency)) || $date >= $expiration) ? TRUE : FALSE;
-        if ($updateRequired || $version == 'next' || $force) {
-            $this->downloadNASRData($version);
+        if ($updateRequired || $editionName == 'next' || $force) {
+            $this->downloadNASRData($editionName);
         }
 
         if (!$this->downloadFailed) {

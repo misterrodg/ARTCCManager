@@ -29,11 +29,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
   //Server Work Routes
   ////CIFP
-  Route::get('/cifp/info/{version}', [CIFPController::class, 'getInfo']);
+  Route::get('/cifp/info/{editionName}', [CIFPController::class, 'getInfo']);
   Route::post('/cifp/download', [CIFPController::class, 'getDownload']);
   Route::post('/cifp/decompress', [CIFPController::class, 'decompressDownload']);
   ////NASR
-  Route::get('/nasr/info/{version}', [NASRController::class, 'getInfo']);
+  Route::get('/nasr/info/{editionName}', [NASRController::class, 'getInfo']);
   Route::post('/nasr/download', [NASRController::class, 'getDownload']);
   Route::post('/nasr/decompress', [NASRController::class, 'decompressDownload']);
 });

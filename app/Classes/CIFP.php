@@ -16,9 +16,9 @@ class CIFP
   public $airacId;
   public $faaResponse;
 
-  public function __construct(?string $version = "current", ?string $date = "now", ?string $editionNumber = "", ?string $editionUrl = "", ?string $airacId = "")
+  public function __construct(?string $editionName = "current", ?string $date = "now", ?string $editionNumber = "", ?string $editionUrl = "", ?string $airacId = "")
   {
-    $this->editionName = strtoupper($version);
+    $this->editionName = strtoupper($editionName);
     $this->editionDate = new \DateTime($date);
     $this->editionNumber = $editionNumber;
     $this->editionUrl = $editionUrl;
@@ -79,7 +79,7 @@ class CIFP
   {
     $localCifpDir = "cifp/" . $this->editionName . "/";
     $localZIP = $localCifpDir . "FAACIFP.zip";
-    $airacFile = $localCifpDir . "AIRAC";
+    $airacFile = $localCifpDir . "AIRAC.json";
     //Set up responses
     $code = 500;
     $message = "Failed";
@@ -100,7 +100,8 @@ class CIFP
     //If unzipped, rename file and delete ZIP
     if ($zipResponse->isSuccess) {
       //Add AIRAC Data
-      Storage::put($airacFile, $this->airacId);
+      Storage::delete($airacFile);
+      Storage::put($airacFile, json_encode($this));
       //Rename
       Storage::move($faaFile, $localFile);
       //Delete ZIP
@@ -115,7 +116,7 @@ class CIFP
     return $response;
   }
   /*
-  public function importCIFPData(string $version = 'current',bool $force){
+  public function importCIFPData(string $editionName = 'current',bool $force){
     $cifpFile = new File("/assets/cifp/","FAACIFP18");
     $cifpCurrency = DataCurrency::getDataIdInfo('CIFP');
     if(!empty($cifpCurrency)){
@@ -127,8 +128,8 @@ class CIFP
     }
     $date = Carbon\Carbon::now()->startOfDay();
     $updateRequired = (!$cifpFile->exists() || (empty($cifpCurrency)) || $date >= $expiration) ? TRUE : FALSE;
-    if($updateRequired || $version == 'next' || $force){
-      $this->downloadCIFPData($version);
+    if($updateRequired || $editionName == 'next' || $force){
+      $this->downloadCIFPData($editionName);
     }
     $passData = array();
     $procedureCount = 0;

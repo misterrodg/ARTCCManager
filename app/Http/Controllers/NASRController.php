@@ -9,9 +9,9 @@ use App\Classes\ResponseMessage;
 
 class NASRController extends Controller
 {
-  public function getInfo($version = "current")
+  public function getInfo($editionName = "current")
   {
-    $nasr = new NASR($version);
+    $nasr = new NASR($editionName);
     $nasrData = $nasr->getData();
 
     $success = (intval($nasr->faaResponse->status->code) == 200) ? TRUE : FALSE;
@@ -21,14 +21,14 @@ class NASRController extends Controller
 
   public function getDownload(Request $request)
   {
-    $nasr = new NASR($request->version, $request->editionDate, $request->editionNumber, $request->editionUrl, $request->airacId);
+    $nasr = new NASR($request->editionName, $request->editionDate, $request->editionNumber, $request->editionUrl, $request->airacId);
     $response = $nasr->download();
     return $response->toJson();
   }
 
   public function decompressDownload(Request $request)
   {
-    $nasr = new NASR($request->version, $request->editionDate, $request->editionNumber, $request->editionUrl, $request->airacId);
+    $nasr = new NASR($request->editionName, $request->editionDate, $request->editionNumber, $request->editionUrl, $request->airacId);
     $response = $nasr->decompress();
     return $response->toJson();
   }
