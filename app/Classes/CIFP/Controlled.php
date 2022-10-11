@@ -47,7 +47,7 @@ class Controlled
 
   public function fromString(string $line)
   {
-    $texthelper = new TextHelper;
+    $texthelp = new TextHelper;
     /*
       This function is a mess, but the commented lines
       have been left in to show the FAA file definition
@@ -81,10 +81,10 @@ class Controlled
     $this->arcBearing = 0;
     //$rnp = substr($line,78,3);
     $lowerLimit = substr($line, 81, 5);
-    $this->lowerLimit = $texthelper->handleGNDFL($lowerLimit);
+    $this->lowerLimit = $texthelp->handleGNDFL($lowerLimit);
     $this->lowerLimitUnit = substr($line, 86, 1); //M:MSL,A:AGL
     $upperLimit = substr($line, 87, 5);
-    $this->upperLimit = $texthelper->handleGNDFL($upperLimit);
+    $this->upperLimit = $texthelp->handleGNDFL($upperLimit);
     $this->upperLimitUnit = substr($line, 92, 1); //M:MSL,A:AGL
     $this->controlledAirspaceName = (trim(substr($line, 93, 30)) == '') ? null : trim(substr($line, 93, 30));
     //$file_record_no = substr($line,123,5);
@@ -94,14 +94,14 @@ class Controlled
     //Main Cont Point
     $contLat = substr($line, 32, 9);
     $contLon = substr($line, 41, 10);
-    $coord = $texthelper->handleDMSFormatted($contLat, 'ADDMMSSSS', $contLon, 'ADDDMMSSSS');
+    $coord = $texthelp->handleDMS($contLat, $contLon);
     $this->contLat = $coord->lat;
     $this->contLon = $coord->lon;
     //Arc Definition
     $arcOriginLat = substr($line, 51, 9);
     $arcOriginLon = substr($line, 60, 10);
     if (trim($arcOriginLat) != '') {
-      $arcCoord = $texthelper->handleDMSFormatted($arcOriginLat, 'ADDMMSSSS', $arcOriginLon, 'ADDDMMSSSS');
+      $arcCoord = $texthelp->handleDMS($arcOriginLat, $arcOriginLon);
       $this->arcLat = $arcCoord->lat;
       $this->arcLon = $arcCoord->lon;
       $this->arcDist = intval(substr($line, 70, 4)) / 10;
