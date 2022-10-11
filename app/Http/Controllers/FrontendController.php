@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 use App\Models\DataCurrency;
+use Illuminate\Support\Facades\Storage;
 
 class FrontendController extends Controller
 {
