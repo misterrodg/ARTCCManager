@@ -32,6 +32,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
   Route::get('/cifp/info/{editionName}', [CIFPController::class, 'getInfo']);
   Route::post('/cifp/download', [CIFPController::class, 'getDownload']);
   Route::post('/cifp/decompress', [CIFPController::class, 'decompressDownload']);
+  //////CIFP Imports
+  Route::post('/cifp/import/controlled', [CIFPController::class, 'processControlled']);
+  Route::post('/cifp/import/restrictive', [CIFPController::class, 'processRestrictive']);
+  Route::post('/cifp/import/procedures', [CIFPController::class, 'processProcedures']);
+  Route::post('/cifp/import/finalize', [CIFPController::class, 'finalize']);
+
   ////NASR
   Route::get('/nasr/info/{editionName}', [NASRController::class, 'getInfo']);
   Route::post('/nasr/download', [NASRController::class, 'getDownload']);

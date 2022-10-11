@@ -32,4 +32,36 @@ class CIFPController extends Controller
     $response = $cifp->decompress();
     return $response->toJson();
   }
+
+  public function processControlled(Request $request)
+  {
+    $cifp = new CIFP;
+    $cifp->fromLocalFile($request->editionName);
+    $result = $cifp->processControlled();
+    return $result;
+  }
+
+  public function processRestrictive(Request $request)
+  {
+    $cifp = new CIFP;
+    $cifp->fromLocalFile($request->editionName);
+    $result = $cifp->processRestrictive();
+    return $result;
+  }
+
+  public function processProcedures(Request $request)
+  {
+    $cifp = new CIFP;
+    $cifp->fromLocalFile($request->editionName);
+    $result = $cifp->processProcedures($request->procedureType);
+    return $result;
+  }
+
+  public function finalize(Request $request)
+  {
+    $cifp = new CIFP;
+    $cifp->fromLocalFile($request->editionName);
+    $result = $cifp->finalize();
+    return $result;
+  }
 }

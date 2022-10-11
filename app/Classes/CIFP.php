@@ -2,13 +2,23 @@
 
 namespace App\Classes;
 
-use Carbon;
 use Illuminate\Support\Facades\Storage;
 
 use App\Classes\ApiCall;
 
+use App\Models\ControlledBoundary;
+use App\Models\DataCurrency;
+use App\Models\Procedure;
+use App\Models\RestrictiveBoundary;
+
 class CIFP
 {
+  const SID_ID = "PD";
+  const STAR_ID = "PE";
+  const IAP_ID = "PF";
+  const CONTROLLED_ID = "UC";
+  const RESTRICTIVE_ID = "UR";
+
   public $editionName;
   public $editionDate;
   public $editionNumber;
@@ -26,6 +36,19 @@ class CIFP
     $this->faaResponse = (object)[];
   }
 
+  public function fromLocalFile(?string $editionName = "current")
+  {
+    $localFile = Storage::get("cifp/" . $editionName . "/AIRAC.json");
+    $jsonData = json_decode($localFile);
+    $this->editionName = $jsonData->editionName;
+    $this->editionDate = $jsonData->editionDate;
+    $this->editionNumber = $jsonData->editionNumber;
+    $this->editionUrl = $jsonData->editionUrl;
+    $this->airacId = $jsonData->airacId;
+    $this->faaResponse = $jsonData->faaResponse;
+    return $this;
+  }
+
   public function get()
   {
     return $this;
@@ -33,18 +56,18 @@ class CIFP
 
   public function getData()
   {
-    $cifpInfoUrl = env('FAA_CIFP_URL');
-    $cifpInfo = new ApiCall($cifpInfoUrl . '?edition=' . $this->editionName);
-    $cifpInfo->get('json');
+    $cifpInfoUrl = env("FAA_CIFP_URL");
+    $cifpInfo = new ApiCall($cifpInfoUrl . "?edition=" . $this->editionName);
+    $cifpInfo->get("json");
     $jsonObj = $cifpInfo->decode();
 
     $dtObj = new \DateTime();
-    $editionDate = $dtObj->createFromFormat('m/d/Y', $jsonObj->edition[0]->editionDate);
+    $editionDate = $dtObj->createFromFormat("m/d/Y", $jsonObj->edition[0]->editionDate);
 
-    $this->editionDate = $editionDate->format('Y-m-d H:i:s');
+    $this->editionDate = $editionDate->format("Y-m-d");
     $this->editionNumber = $jsonObj->edition[0]->editionNumber;
     $this->editionUrl = $jsonObj->edition[0]->product->url;
-    $this->airacId = date('y') . str_pad($this->editionNumber, 2, '0', STR_PAD_LEFT);
+    $this->airacId = date("y") . str_pad($this->editionNumber, 2, "0", STR_PAD_LEFT);
     $this->faaResponse = $jsonObj;
 
     return $this;
@@ -72,7 +95,7 @@ class CIFP
       $data = $path;
     }
     $response = new ResponseMessage($code, $message, $success, $data);
-    return $response;
+    return $response->toJson();
   }
 
   public function decompress()
@@ -80,14 +103,11 @@ class CIFP
     $localCifpDir = "cifp/" . $this->editionName . "/";
     $localZIP = $localCifpDir . "FAACIFP.zip";
     $airacFile = $localCifpDir . "AIRAC.json";
-    //Set up responses
-    $code = 500;
-    $message = "Failed";
-    $success = FALSE;
-    $data = null;
+    //Set up response
+    $response = new ResponseMessage(500, "Failed", FALSE, null);
     //Delete existing files if they exist
     $cifpFileArray = array(
-      'FAACIFP18'
+      "FAACIFP18"
     );
     $faaFile = $localCifpDir . "FAACIFP18";
     $localFile = $localCifpDir . "FAACIFP";
@@ -107,106 +127,160 @@ class CIFP
       //Delete ZIP
       Storage::delete($localZIP);
       //Update Response
-      $code = 200;
-      $message = "OK";
-      $success = TRUE;
-      $data = null;
+      $response->update(200, "OK", TRUE, null);
     }
-    $response = new ResponseMessage($code, $message, $success, $data);
-    return $response;
+    return $response->toJson();
   }
-  /*
-  public function importCIFPData(string $editionName = 'current',bool $force){
-    $cifpFile = new File("/assets/cifp/","FAACIFP18");
-    $cifpCurrency = DataCurrency::getDataIdInfo('CIFP');
-    if(!empty($cifpCurrency)){
-      $expiration = Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$cifpCurrency->edition_date)->addDays(28)->startOfDay();
-      $this->editionDate = $cifpCurrency->edition_date;
-      $this->airacId = $cifpCurrency->cycle_id;
-    } else {
-      $expiration = Carbon\Carbon::now();
-    }
-    $date = Carbon\Carbon::now()->startOfDay();
-    $updateRequired = (!$cifpFile->exists() || (empty($cifpCurrency)) || $date >= $expiration) ? TRUE : FALSE;
-    if($updateRequired || $editionName == 'next' || $force){
-      $this->downloadCIFPData($editionName);
-    }
-    $passData = array();
-    $procedureCount = 0;
-    $controlledCount = 0;
-    $restrictiveCount = 0;
-    $firstPass = TRUE;
-    $sectionPasses = array('PD','PE','PF','UC','UR');
-    foreach($sectionPasses as $sp){
-      $cifpHandle = $cifpFile->read();
-      if($cifpHandle){
-        $lineNo = 1;
-        $passSectionCode = substr($sp,0,1);
-        $passSubSectionCode = substr($sp,-1,1);
-        while(($line = fgets($cifpHandle)) !== FALSE){
-          $sectionCode = substr($line,4,1);
-          switch($passSectionCode){
-            case 'P':$subSectionCode = substr($line,12,1);break;
-            case 'U':$subSectionCode = substr($line, 5,1);break;
-          }
-          //Process Lines
-          if(
-            ($sectionCode.$subSectionCode == 'PD' && $sp == 'PD') ||
-            ($sectionCode.$subSectionCode == 'PE' && $sp == 'PE') ||
-            ($sectionCode.$subSectionCode == 'PF' && $sp == 'PF')
-          ){
-            //SIDs/STARs/APPs
-            $procedure = new CIFP\Procedure($line);
-            if(!is_null($procedure->toDBArray($this->airacId))){
-              array_push($passData,$procedure->toDBArray($this->airacId));
-            }
-            $procedureCount++;
-          }
-          if($sectionCode.$subSectionCode == 'UC' && $sp == 'UC'){
+
+  public function processControlled()
+  {
+    $cifpFilePath = "cifp/" . $this->editionName . "/FAACIFP";
+    $controlledData = array();
+    $next = ($this->editionName == "NEXT") ? true : false;
+    //Set up response
+    $response = new ResponseMessage(500, "Failed", FALSE, null);
+    //Get data from FAACIFP file
+    if (Storage::exists($cifpFilePath)) {
+      $cifpFile = Storage::path($cifpFilePath);
+      $cifpHandle = fopen($cifpFile, "r");
+      if ($cifpHandle) {
+        //Read through lines for Controlled lines
+        while (($line = fgets($cifpHandle)) !== FALSE) {
+          $sectionCode = substr($line, 4, 1);
+          $subSectionCode = substr($line, 5, 1);
+          if ($sectionCode . $subSectionCode == self::CONTROLLED_ID) {
             //Controlled Airspace
-            $controlled = new CIFP\Controlled($line);
-            array_push($passData,$controlled->toDBArray($this->airacId));
-            $controlledCount++;
+            $controlled = new CIFP\Controlled;
+            $controlled->fromString($line);
+            array_push($controlledData, $controlled->toDBArray($this->airacId, $next));
           }
-          if($sectionCode.$subSectionCode == 'UR' && $sp == 'UR'){
-            //Restrictive Airspace
-            $restrictive = new CIFP\Restrictive($line);
-            array_push($passData,$restrictive->toDBArray($this->airacId));
-            $restrictiveCount++;
-          }
-          $lineNo++;
         }
-        if($sp == 'PD' || $sp == 'PE' || $sp == 'PF'){
-          GeoData::deleteProceduresByType(substr($sp,-1));
-          foreach(array_chunk($passData,1000) as $p){
-            GeoData::insertProcedures($p);
-          }
-          DataCurrency::updateOrInsertDataId('CIFP_PROC',$this->airacId,$this->editionDate,date('Y-m-d H:i:s'));
+        //Delete old Controlled data
+        ControlledBoundary::truncate();
+        //Chunk through controlledData array and bulk insert
+        foreach (array_chunk($controlledData, 1000) as $d) {
+          ControlledBoundary::insert($d);
         }
-        if($sp == 'UC'){
-          GeoData::deleteControlled();
-          foreach(array_chunk($passData,1000) as $p){
-            GeoData::insertControlleds($p);
-          }
-          DataCurrency::updateOrInsertDataId('CIFP_CONT',$this->airacId,$this->editionDate,date('Y-m-d H:i:s'));
-        }
-        if($sp == 'UR'){
-          GeoData::deleteRestrictive();
-          foreach(array_chunk($passData,1000) as $p){
-            GeoData::insertRestrictives($p);
-          }
-          DataCurrency::updateOrInsertDataId('CIFP_REST',$this->airacId,$this->editionDate,date('Y-m-d H:i:s'));
-        }
-        $passData = array();
+        //Update Response
+        $response->update(200, "OK", TRUE, null);
+        DataCurrency::updateOrCreate(
+          ["data_id" => "CIFP_CONT", "edition" => $this->editionName],
+          ["cycle_id" => $this->airacId, "edition_date" => $this->editionDate->date]
+        );
         fclose($cifpHandle);
       }
-      $firstPass = FALSE;
     }
-
-    echo "Procedures: ".$procedureCount."<br/>";
-    echo "Controlled Airspace: ".$controlledCount."<br/>";
-    echo "Restricted Records: ".$restrictiveCount."<br/><br/>";
-    echo "AIRAC ".$this->airacId." import complete at ".date(sprintf('Y-m-d\TH:i:s%sP', substr(microtime(), 1, 8)))."<br/>";
+    return $response->toJson();
   }
-  */
+
+  public function processRestrictive()
+  {
+    $cifpFilePath = "cifp/" . $this->editionName . "/FAACIFP";
+    $restrictiveData = array();
+    $next = ($this->editionName == "NEXT") ? true : false;
+    //Set up response
+    $response = new ResponseMessage(500, "Failed", FALSE, null);
+    //Get data from FAACIFP file
+    if (Storage::exists($cifpFilePath)) {
+      $cifpFile = Storage::path($cifpFilePath);
+      $cifpHandle = fopen($cifpFile, "r");
+      if ($cifpHandle) {
+        //Read through lines for Restrictive lines
+        while (($line = fgets($cifpHandle)) !== FALSE) {
+          $sectionCode = substr($line, 4, 1);
+          $subSectionCode = substr($line, 5, 1);
+          if ($sectionCode . $subSectionCode == self::RESTRICTIVE_ID) {
+            //Restrictive Airspace
+            $restrictive = new CIFP\Restrictive;
+            $restrictive->fromString($line);
+            array_push($restrictiveData, $restrictive->toDBArray($this->airacId, $next));
+          }
+        }
+        //Delete old Restrictive data
+        RestrictiveBoundary::truncate();
+        //Chunk through restrictiveData array and bulk insert
+        foreach (array_chunk($restrictiveData, 1000) as $d) {
+          RestrictiveBoundary::insert($d);
+        }
+        //Update Response
+        $response->update(200, "OK", TRUE, null);
+        DataCurrency::updateOrCreate(
+          ["data_id" => "CIFP_REST", "edition" => $this->editionName],
+          ["cycle_id" => $this->airacId, "edition_date" => $this->editionDate->date]
+        );
+        fclose($cifpHandle);
+      }
+    }
+    return $response->toJson();
+  }
+
+  public function processProcedures(string $procedureType)
+  {
+    switch ($procedureType) {
+      case "sid":
+        $procedureId = self::SID_ID;
+        break;
+      case "star":
+        $procedureId = self::STAR_ID;
+        break;
+      case "iap":
+        $procedureId = self::IAP_ID;
+        break;
+    }
+    $cifpFilePath = "cifp/" . $this->editionName . "/FAACIFP";
+    $proceduresData = array();
+    $next = ($this->editionName == "NEXT") ? true : false;
+    //Set up response
+    $response = new ResponseMessage(500, "Failed", FALSE, null);
+    //Get data from FAACIFP file
+    if (Storage::exists($cifpFilePath)) {
+      $cifpFile = Storage::path($cifpFilePath);
+      $cifpHandle = fopen($cifpFile, "r");
+      if ($cifpHandle) {
+        //Read through lines for Procedures lines
+        while (($line = fgets($cifpHandle)) !== FALSE) {
+          $sectionCode = substr($line, 4, 1);
+          $subSectionCode = substr($line, 12, 1);
+          if ($sectionCode . $subSectionCode == $procedureId) {
+            //Procedure
+            $procedure = new CIFP\Procedure;
+            $procedure->fromString($line);
+            if (!is_null($procedure->toDBArray($this->airacId))) {
+              array_push($proceduresData, $procedure->toDBArray($this->airacId, $next));
+            }
+          }
+        }
+        //Delete old Procedures data
+        Procedure::where("proc_type", "=", $procedureId)->delete();
+        //Chunk through proceduresData array and bulk insert
+        foreach (array_chunk($proceduresData, 1000) as $d) {
+          Procedure::insert($d);
+        }
+        //Update Response
+        $response->update(200, "OK", TRUE, null);
+        DataCurrency::updateOrCreate(
+          ["data_id" => "CIFP_PROC", "edition" => $this->editionName],
+          ["cycle_id" => $this->airacId, "edition_date" => $this->editionDate->date]
+        );
+        fclose($cifpHandle);
+      }
+    }
+    return $response->toJson();
+  }
+
+  public function finalize()
+  {
+    //Set up response
+    $response = new ResponseMessage(500, "Failed", FALSE, null);
+    $cifpData = DataCurrency::updateOrCreate(
+      ["data_id" => "CIFP", "edition" => $this->editionName],
+      ["cycle_id" => $this->airacId, "edition_date" => $this->editionDate->date]
+    );
+    if ($cifpData) {
+      //Update Response
+      $record = DataCurrency::where("data_id", "=", "CIFP")->where("edition", "=", $this->editionName)->first();
+      $response->update(200, "OK", TRUE, $record);
+    }
+    return $response->toJson();
+  }
 }
