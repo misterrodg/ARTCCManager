@@ -11,6 +11,7 @@ class DataCurrency extends Model
   //Fillable Fields
   protected $fillable = [
     'data_id',
+    'edition',
     'cycle_id',
     'edition_date',
   ];
