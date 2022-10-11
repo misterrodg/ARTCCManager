@@ -49,6 +49,11 @@ class Procedure
 
   public function fromString(string $line)
   {
+    /*
+      This function is a mess, but the commented lines
+      have been left in to show the FAA file definition
+      in case they should be useful to anyone.
+    */
     $this->airportId = trim(substr($line, 6, 4));
     $this->icaoRegion = substr($line, 10, 2);
     $this->procedureType = substr($line, 12, 1);
