@@ -9,28 +9,29 @@ use App\Classes\ResponseMessage;
 
 class CIFPController extends Controller
 {
-  public function getInfo($editionName = "current")
+  public function getInfo(?string $editionName = "current")
   {
     $cifp = new CIFP($editionName);
     $cifpData = $cifp->getData();
 
     $success = (intval($cifp->faaResponse->status->code) == 200) ? TRUE : FALSE;
     $response = new ResponseMessage($cifp->faaResponse->status->code, $cifp->faaResponse->status->message, $success, $cifpData);
-    return $response->toJson();
+    $result = $response->toJson();
+    return $result;
   }
 
   public function getDownload(Request $request)
   {
     $cifp = new CIFP($request->editionName, $request->editionDate, $request->editionNumber, $request->editionUrl, $request->airacId);
-    $response = $cifp->download();
-    return $response->toJson();
+    $result = $cifp->download("FAACIFP.zip");
+    return $result;
   }
 
   public function decompressDownload(Request $request)
   {
     $cifp = new CIFP($request->editionName, $request->editionDate, $request->editionNumber, $request->editionUrl, $request->airacId);
-    $response = $cifp->decompress();
-    return $response->toJson();
+    $result = $cifp->decompress();
+    return $result;
   }
 
   public function processControlled(Request $request)
