@@ -4,6 +4,8 @@ import { DateTime } from "luxon";
 
 import PrimaryButton from "../PrimaryButton";
 import Download from "./Download";
+import ImportCIFP from "./ImportCIFP";
+import ImportNASR from "./ImportNASR";
 
 const dtNow = DateTime.now();
 
@@ -96,10 +98,20 @@ const Currency = ({
     setNextFetch(false);
   }
 
-  const handleCurrency = (data) => {
+  const handleDatabaseCurrency = (data) => {
+    if (data.edition === "CURRENT") {
+      setDatabaseCurrent(data);
+    }
+    if (data.edition === "NEXT") {
+      setDatabaseNext(data);
+    }
+  };
+
+  const handleDownloadCurrency = (data) => {
     if (data.editionName === "CURRENT") {
       setDownloadCurrent(data);
-    } else {
+    }
+    if (data.editionName === "NEXT") {
       setDownloadNext(data);
     }
   };
@@ -175,9 +187,20 @@ const Currency = ({
           <div className="flex items-center">Downloaded Current:</div>
           <div className="flex items-center">
             {downloadCurrent ? (
-              <span className={`${currentDownloadAge >= 28 && "text-red-500"}`}>
+              <div className={`${currentDownloadAge >= 28 && "text-red-500"}`}>
                 {downloadCurrent?.airacId} {makeDayString(currentDownloadAge)}
-              </span>
+                {dataType.toUpperCase() === "CIFP" ? (
+                  <ImportCIFP
+                    handleCurrency={handleDatabaseCurrency}
+                    handleErrorMessage={handleErrorMessage}
+                  />
+                ) : (
+                  <ImportNASR
+                    handleCurrency={handleDatabaseCurrency}
+                    handleErrorMessage={handleErrorMessage}
+                  />
+                )}
+              </div>
             ) : (
               <span className="text-amgrey italic">Not Downloaded</span>
             )}
@@ -189,6 +212,19 @@ const Currency = ({
             {downloadNext ? (
               <span className={`${nextDownloadAge >= 0 && "text-red-500"}`}>
                 {downloadNext?.airacId} {makeDayString(nextDownloadAge)}
+                {dataType.toUpperCase() === "CIFP" ? (
+                  <ImportCIFP
+                    handleCurrency={handleDatabaseCurrency}
+                    handleErrorMessage={handleErrorMessage}
+                    next
+                  />
+                ) : (
+                  <ImportNASR
+                    handleCurrency={handleDatabaseCurrency}
+                    handleErrorMessage={handleErrorMessage}
+                    next
+                  />
+                )}
               </span>
             ) : (
               <span className="text-amgrey italic">Not Downloaded</span>
@@ -206,7 +242,7 @@ const Currency = ({
                     <Download
                       dataType={dataType}
                       faaDataObject={faaCurrent}
-                      handleCurrency={handleCurrency}
+                      handleCurrency={handleDownloadCurrency}
                       handleErrorMessage={handleErrorMessage}
                     />
                   )}
@@ -228,7 +264,7 @@ const Currency = ({
                     <Download
                       dataType={dataType}
                       faaDataObject={faaNext}
-                      handleCurrency={handleCurrency}
+                      handleCurrency={handleDownloadCurrency}
                       handleErrorMessage={handleErrorMessage}
                     />
                   )}
