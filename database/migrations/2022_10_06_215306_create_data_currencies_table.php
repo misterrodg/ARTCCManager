@@ -14,6 +14,7 @@ return new class extends Migration
   public function up()
   {
     Schema::create('data_currencies', function (Blueprint $table) {
+      $table->id();
       $table->string('data_id', 50);
       $table->string('edition', 10)->default('CURRENT');
       $table->char('cycle_id', 4);

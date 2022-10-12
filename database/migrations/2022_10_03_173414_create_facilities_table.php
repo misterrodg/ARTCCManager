@@ -19,10 +19,10 @@ return new class extends Migration
       $table->string('fac_name', 255);
       $table->integer('vis_range', false, true);
       $table->integer('mag_var', false, true);
-      $table->decimal('lat', 10, 7);
-      $table->decimal('lon', 10, 7);
-      $table->decimal('top_lat', 10, 7)->nullable();
-      $table->decimal('bottom_lat', 10, 7)->nullable();
+      $table->decimal('fac_lat', 10, 7);
+      $table->decimal('fac_lon', 10, 7);
+      $table->decimal('north_lat', 10, 7)->nullable();
+      $table->decimal('south_lat', 10, 7)->nullable();
       $table->decimal('west_lon', 10, 7)->nullable();
       $table->decimal('east_lon', 10, 7)->nullable();
       $table->integer('init_alt', false, true)->nullable();
