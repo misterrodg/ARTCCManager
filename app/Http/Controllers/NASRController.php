@@ -33,4 +33,93 @@ class NASRController extends Controller
     $result = $nasr->decompress();
     return $result;
   }
+
+  public function processAirports(Request $request)
+  {
+    $nasr = new NASR;
+    $nasr->fromLocalFile($request->editionName);
+    $result = $nasr->processAirports();
+    return $result;
+  }
+
+  public function processAirways(Request $request)
+  {
+    $nasr = new NASR;
+    $nasr->fromLocalFile($request->editionName);
+    $result = $nasr->processAirways();
+    return $result;
+  }
+
+  public function processAirwaysAts(Request $request)
+  {
+    $nasr = new NASR;
+    $nasr->fromLocalFile($request->editionName);
+    $result = $nasr->processAirwaysAts();
+    return $result;
+  }
+
+  public function processAwos(Request $request)
+  {
+    $nasr = new NASR;
+    $nasr->fromLocalFile($request->editionName);
+    $result = $nasr->processAwos();
+    return $result;
+  }
+
+  public function processBoundaries(Request $request)
+  {
+    $nasr = new NASR;
+    $nasr->fromLocalFile($request->editionName);
+    $result = $nasr->processBoundaries();
+    return $result;
+  }
+
+  public function processCodedRoutes(Request $request)
+  {
+    $nasr = new NASR;
+    $nasr->fromLocalFile($request->editionName);
+    $result = $nasr->processCodedRoutes();
+    return $result;
+  }
+
+  public function processFixes(Request $request)
+  {
+    $nasr = new NASR;
+    $nasr->fromLocalFile($request->editionName);
+    $result  = $nasr->processFixes();
+    return $result;
+  }
+
+  public function processILS(Request $request)
+  {
+    $request->editionName = "CURRENT";
+    $nasr = new NASR;
+    $nasr->fromLocalFile($request->editionName);
+    $result = $nasr->processILS();
+    return $result;
+  }
+
+  public function processNavaids(Request $request)
+  {
+    $nasr = new NASR;
+    $nasr->fromLocalFile($request->editionName);
+    $result  = $nasr->processNavaids();
+    return $result;
+  }
+
+  public function processPreferredRoutes(Request $request)
+  {
+    $nasr = new NASR;
+    $nasr->fromLocalFile($request->editionName);
+    $result = $nasr->processPreferredRoutes();
+    return $result;
+  }
+
+  public function finalize(Request $request)
+  {
+    $nasr = new NASR;
+    $nasr->fromLocalFile($request->editionName);
+    $result = $nasr->finalize();
+    return $result;
+  }
 }

@@ -42,6 +42,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
   Route::get('/nasr/info/{editionName}', [NASRController::class, 'getInfo']);
   Route::post('/nasr/download', [NASRController::class, 'getDownload']);
   Route::post('/nasr/decompress', [NASRController::class, 'decompressDownload']);
+  //////NASR Imports
+  Route::post('/nasr/airports', [NASRController::class, 'processAirports']);
+  Route::post('/nasr/airways', [NASRController::class, 'processAirways']);
+  Route::post('/nasr/airwaysats', [NASRController::class, 'processAirwaysAts']);
+  Route::post('/nasr/awos', [NASRController::class, 'processAwos']);
+  Route::post('/nasr/boundaries', [NASRController::class, 'processBoundaries']);
+  Route::post('/nasr/codedroutes', [NASRController::class, 'processCodedRoutes']);
+  Route::post('/nasr/ils', [NASRController::class, 'processILS']);
+  Route::post('/nasr/fixes', [NASRController::class, 'processFixes']);
+  Route::post('/nasr/navaids', [NASRController::class, 'processNavaids']);
+  Route::post('/nasr/preferredroutes', [NASRController::class, 'processPreferredRoutes']);
+  Route::post('/nasr/finalize', [NASRController::class, 'finalize']);
 });
 
 require __DIR__ . '/auth.php';
