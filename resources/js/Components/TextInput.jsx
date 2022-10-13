@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from "react";
 export default function TextInput({
   type = "text",
   name,
+  pattern,
   value,
   className,
   autoComplete,
@@ -23,6 +24,7 @@ export default function TextInput({
       <input
         type={type}
         name={name}
+        pattern={pattern}
         value={value}
         className={
           `border-gray-300 focus:border-amgreen-dark focus:ring focus:ring-amgreen-light focus:ring-opacity-50 rounded-md shadow-sm ` +
