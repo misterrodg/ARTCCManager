@@ -26,4 +26,8 @@ class AWOS extends Model
     'next'
   ];
   //Relationships
+  public function airport()
+  {
+    return $this->belongsTo(Airport::class, 'assoc_fac', 'fac_id');
+  }
 }

@@ -35,4 +35,9 @@ class Airport extends Model
   {
     return $this->hasMany(Runway::class);
   }
+
+  public function awos()
+  {
+    return $this->hasMany(AWOS::class, 'assoc_fac', 'fac_id');
+  }
 }
