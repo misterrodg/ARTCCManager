@@ -40,4 +40,9 @@ class Airport extends Model
   {
     return $this->hasMany(AWOS::class, 'assoc_fac', 'fac_id');
   }
+
+  public function preferred_routes()
+  {
+    return $this->hasMany(PreferredRoute::class, 'orig', 'faa_id');
+  }
 }

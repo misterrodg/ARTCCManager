@@ -27,4 +27,13 @@ class PreferredRoute extends Model
     'next'
   ];
   //Relationships
+  public function orig_airport()
+  {
+    return $this->belongsTo(Airport::class, 'faa_id', 'orig');
+  }
+
+  public function dest_airport()
+  {
+    return $this->belongsTo(Airport::class, 'faa_id', 'dest');
+  }
 }
