@@ -21,10 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     return Inertia::render('Dashboard');
   })->name('dashboard');
 
-  Route::get('/facilities', function () {
-    return Inertia::render('Facilities');
-  })->name('facilities');
-
+  Route::get('/facilities', [FrontendController::class, 'facilities'])->name('facilities');
   Route::get('/files', [FrontendController::class, 'files'])->name('files');
 
   //Server Work Routes

@@ -5,10 +5,27 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
+use App\Models\Alias;
 use App\Models\DataCurrency;
 
 class FrontendController extends Controller
 {
+  public function facilities()
+  {
+    $facilities = null;
+    $aliases = Alias::all();
+    $positions = null;
+
+    return Inertia::render(
+      'Facilities',
+      [
+        'facilities' => $facilities,
+        'aliases' => $aliases,
+        'positions' => $positions,
+      ]
+    );
+  }
+
   public function files()
   {
     $cifpCurrent = DataCurrency::where('data_id', '=', 'CIFP')->where('edition', '=', 'CURRENT')->first();
