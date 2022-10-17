@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AliasController;
 use App\Http\Controllers\CIFPController;
 use App\Http\Controllers\NASRController;
 use App\Http\Controllers\FrontendController;
@@ -51,6 +52,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
   Route::post('/nasr/navaids', [NASRController::class, 'processNavaids']);
   Route::post('/nasr/preferredroutes', [NASRController::class, 'processPreferredRoutes']);
   Route::post('/nasr/finalize', [NASRController::class, 'finalize']);
+
+  //Aliases
+  Route::post('/aliases/process', [AliasController::class, 'processAlias'])->name('alias.process');
+  Route::post('/aliases/delete', [AliasController::class, 'deleteAlias'])->name('alias.delete');
+  Route::post('/aliases/import', [AliasController::class, 'importAliasFile'])->name('alias.import');
+  Route::get('/aliases/build', [AliasController::class, 'buildAliasFile']);
 });
 
 require __DIR__ . '/auth.php';
