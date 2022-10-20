@@ -51,7 +51,7 @@ class Boundary
       $lat = null;
       $lon = null;
     } else {
-      $coord = $texthelper->handleDMSFormatted($lat, 'DD-MM-SS.SSSSA', $lon, "DDD-MM-SS.SSSSA");
+      $coord = $texthelper->handleDMSFormatted($lat, 'DD-MM-SS.SA', $lon, "DDD-MM-SS.SA");
       $lat = $coord->lat;
       $lon = $coord->lon;
     }
