@@ -2,7 +2,7 @@
 
 namespace App\Classes\Helpers;
 
-use App\Classes\Coordinate;
+use App\Classes\Coordinates\Coordinate;
 
 class TextHelper
 {
