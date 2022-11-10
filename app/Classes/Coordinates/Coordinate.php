@@ -37,8 +37,8 @@ class Coordinate
 
   public function fromDms(string $nS = 'N', string $latD, string $latM, string $latS, string $eW = 'W', string $lonD, string $lonM, string $lonS)
   {
-    $lat  = $latD + $this->minToDeg($latM) + $this->secToDeg($latS);
-    $lon  = $lonD + $this->minToDeg($lonM) + $this->secToDeg($lonS);
+    $lat  = $latD + $this->changeLevel($latM, -1) + $this->changeLevel($latS, -2);
+    $lon  = $lonD + $this->changeLevel($lonM, -1) + $this->changeLevel($lonS, -2);
     $this->lat = ($nS == 'S') ? -$lat : $lat;
     $this->lon = ($eW == 'W') ? -$lon : $lon;
   }
@@ -78,27 +78,16 @@ class Coordinate
     return $result;
   }
 
-  private function degToMin(float $degrees)
+  private function changeLevel(float $inputValue, int $levels = 1)
   {
-    $minutes = $degrees * 60;
-    return $minutes;
-  }
-
-  private function degToSec(float $degrees)
-  {
-    $seconds = $degrees * 60 * 60;
-    return $seconds;
-  }
-
-  private function minToDeg(float $minutes)
-  {
-    $degrees = $minutes / 60;
-    return $degrees;
-  }
-
-  private function secToDeg(float $seconds)
-  {
-    $degrees = $seconds / 60 / 60;
-    return $degrees;
+    $result = $inputValue;
+    if ($levels == 0) {
+      return $result;
+    } elseif ($levels < 0) {
+      $result = $inputValue / (60 / $levels);
+    } else {
+      $result = $inputValue * (60 * $levels);
+    }
+    return $result;
   }
 }
