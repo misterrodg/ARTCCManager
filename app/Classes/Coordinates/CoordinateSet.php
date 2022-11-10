@@ -60,10 +60,4 @@ class CoordinateSet
     }
     return $result;
   }
-
-  public function getLast()
-  {
-    $result = end($this->coordinateSet);
-    return $result;
-  }
 }
