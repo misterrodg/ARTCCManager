@@ -9,12 +9,25 @@ class Coordinate
   public $lat;
   public $lon;
 
+  /**
+   * @param float $lat Default 0.0.
+   * @param float $lon Default 0.0.
+   * @return void
+   */
   public function __construct(?float $lat = 0.0, ?float $lon = 0.0)
   {
     $this->lat = $lat;
     $this->lon = $lon;
   }
 
+  /**
+   * Modifies $this->lat and $this->lon based on a place, bearing, and distance from another point.
+   * @param float $lat Latitude of the origin point.
+   * @param float $lon Longitude of the origin point.
+   * @param float $bearing Bearing from the origin point.
+   * @param float $distance Distance from the origin point.
+   * @return void
+   */
   public function fromPBD(float $lat, float $lon, float $bearing, float $distance)
   {
     $endLat = asin(sin(deg2rad($lat)) * cos($distance / self::EARTH_RADIUS_NM) + cos(deg2rad($lat)) * sin($distance / self::EARTH_RADIUS_NM) * cos(deg2rad($bearing)));
@@ -24,6 +37,12 @@ class Coordinate
     $this->lon = rad2deg($endLon);
   }
 
+  /**
+   * Modifies $this->lat and $this->lon based on a bearing, and distance from itself. Useful for plotting ad-hoc arcs.
+   * @param float $bearing Bearing from this point to new point.
+   * @param float $distance Distance from this point to new point.
+   * @return Coordinate
+   */
   public function nextViaBD(float $bearing, float $distance)
   {
     $endLat = asin(sin(deg2rad($this->lat)) * cos($distance / self::EARTH_RADIUS_NM) + cos(deg2rad($this->lat)) * sin($distance / self::EARTH_RADIUS_NM) * cos(deg2rad($bearing)));
@@ -35,6 +54,18 @@ class Coordinate
     return $this;
   }
 
+  /**
+   * Modifies $this->lat and $this->lon using Degrees, Minutes, and Seconds.
+   * @param string $nS Default 'N'. North or South identifier.
+   * @param string $latD Degrees latitude.
+   * @param string $latM Minutes latitude.
+   * @param string $latS Seconds latitude.
+   * @param string $eW Default 'W'. East or West identifier.
+   * @param string $lonD Degrees longitude.
+   * @param string $lonM Minutes longitude.
+   * @param string $lonS Seconds longitude.
+   * @return void
+   */
   public function fromDms(string $nS = 'N', string $latD, string $latM, string $latS, string $eW = 'W', string $lonD, string $lonM, string $lonS)
   {
     $lat  = $latD + $this->changeLevel($latM, -1) + $this->changeLevel($latS, -2);
@@ -43,6 +74,12 @@ class Coordinate
     $this->lon = ($eW == 'W') ? -$lon : $lon;
   }
 
+  /**
+   * Calculates the distance between this Coordinate and the provided lat/lon.
+   * @param float $endLat Latitude of the end point.
+   * @param float $endLon Longitude of the end point.
+   * @return float
+   */
   public function haversineGreatCircleDistance(float $endLat, float $endLon)
   {
     $theta = $this->lon - $endLon;
@@ -51,6 +88,12 @@ class Coordinate
     return $distance;
   }
 
+  /**
+   * Calculates the bearing between this Coordinate and the provided lat/lon.
+   * @param float $endLat Latitude of the end point.
+   * @param float $endLon Longitude of the end point.
+   * @return float
+   */
   public function haversineGreatCircleBearing(float $endLat, float $endLon)
   {
     $x = cos(deg2rad($this->lat)) * sin(deg2rad($endLat)) - sin(deg2rad($this->lat)) * cos(deg2rad($endLat)) * cos(deg2rad($endLon - $this->lon));
@@ -60,6 +103,10 @@ class Coordinate
     return $bearing;
   }
 
+  /**
+   * Creates a formatted string in VRC format for this point.
+   * @return string
+   */
   public function toVRC()
   {
     $nS = ($this->lat >= 0) ? 'N' : 'S';
@@ -78,6 +125,12 @@ class Coordinate
     return $result;
   }
 
+  /**
+   * Calculates degrees minutes or seconds from the input value.
+   * @param float $inputValue The degree, minute, or second value.
+   * @param int $levels Default 1. The number of levels to step up or down, where positive is down (Deg -> Min or Min -> Sec) and negative is up (Sec -> Min or Min -> Deg).
+   * @return float
+   */
   private function changeLevel(float $inputValue, int $levels = 1)
   {
     $result = $inputValue;

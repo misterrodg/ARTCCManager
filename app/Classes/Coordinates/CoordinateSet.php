@@ -6,11 +6,19 @@ class CoordinateSet
 {
   public $coordinateSet;
 
+  /**
+   * @return void
+   */
   public function __construct()
   {
     $this->coordinateSet = array();
   }
 
+  /**
+   * Adds a coordinate to the set.
+   * @param Coordinate $coordinate
+   * @return void
+   */
   public function addCoordinate(Coordinate $coordinate)
   {
     if (!is_null($coordinate->lat) && !is_null($coordinate->lon)) {
@@ -18,6 +26,11 @@ class CoordinateSet
     }
   }
 
+  /**
+   * Adds a coordinate to the set, ignoring any duplicates.
+   * @param Coordinate $coordinate
+   * @return void
+   */
   public function addCoordinateUnique(Coordinate $coordinate)
   {
     if (!in_array($coordinate, $this->coordinateSet) && !is_null($coordinate->lat) && !is_null($coordinate->lon)) {
@@ -25,6 +38,13 @@ class CoordinateSet
     }
   }
 
+  /**
+   * Casts the coordinate set as a FROM - TO array.
+   * @param bool $skipSegments Default FALSE. Set TRUE if you wish to print every $mod line.
+   * @param bool $offset Default FALSE. Set TRUE if the first line should be skipped ( i.e. TRUE: |- - - |, FALSE: | - - -| ).
+   * @param int $mod Default 2. Can be modified to have $skipSegments skip every $mod-th line.
+   * @return array CoordinatePairs
+   */
   public function castFromTo(bool $skipSegments = FALSE, bool $offset = FALSE, int $mod = 2)
   {
     $result = array();
@@ -45,6 +65,10 @@ class CoordinateSet
     return $result;
   }
 
+  /**
+   * Casts the coordinate set as a polygon.
+   * @return array CoordinatePairs
+   */
   public function castPoly()
   {
     $result = array();
