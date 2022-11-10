@@ -2,7 +2,7 @@
 
 namespace App\Classes\Coordinates;
 
-class CoordinateSet extends Coordinate
+class CoordinateSet
 {
   public $coordinateSet;
 
