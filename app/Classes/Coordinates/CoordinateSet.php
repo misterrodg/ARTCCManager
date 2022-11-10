@@ -25,7 +25,7 @@ class CoordinateSet
     }
   }
 
-  public function castFromTo(bool $useDashes = FALSE, bool $offset = FALSE, int $mod = 2)
+  public function castFromTo(bool $skipSegments = FALSE, bool $offset = FALSE, int $mod = 2)
   {
     $result = array();
     $fromArray = $this->coordinateSet;
@@ -36,7 +36,7 @@ class CoordinateSet
     $segmentOffset = ($offset) ? 0 : 1;
     for ($i = 0; $i < $limit; $i++) {
       if ($fromArray[$i]->lat != 0.0 && $toArray[$i]->lat != 0.0) {
-        if (!$useDashes || ($useDashes && (fmod($segmentOffset, $mod) != 0))) {
+        if (!$skipSegments || ($skipSegments && (fmod($segmentOffset, $mod) != 0))) {
           array_push($result, new CoordinatePair($fromArray[$i], $toArray[$i]));
         }
       }
