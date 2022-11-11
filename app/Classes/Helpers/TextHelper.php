@@ -8,16 +8,19 @@ class TextHelper
 {
   public function handleGNDFL(string $textVal)
   {
+    $result = null;
     $textVal = trim($textVal);
     if (!is_numeric($textVal)) {
       if ($textVal == 'GND') {
-        return 0;
+        $result = 0;
       }
       if (substr($textVal, 0, 2) == 'FL') {
-        return intval(substr($textVal, 2)) * 100;
+        $result = intval(substr($textVal, 2)) * 100;
       }
+    } else {
+      $result = intval($textVal);
     }
-    return intval($textVal);
+    return $result;
   }
 
   public function handleDMSFormatted(string $lat, string $latFormat, string $lon, string $lonFormat)
