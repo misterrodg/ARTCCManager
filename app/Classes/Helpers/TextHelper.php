@@ -6,6 +6,11 @@ use App\Classes\Coordinates\Coordinate;
 
 class TextHelper
 {
+  /**
+   * Translates FAA textual altitude values into integer values.
+   * @param string $textVal Textual altitude (e.g. 'GND' or 'FL220')
+   * @return int|null Integer value of altitude. Null if unable to parse.
+   */
   public function handleGNDFL(string $textVal)
   {
     $result = null;
@@ -23,6 +28,14 @@ class TextHelper
     return $result;
   }
 
+  /**
+   * Handles DMS-formatted strings, allowing the format to be specified.
+   * @param string $lat Latitude string in DMS.
+   * @param string $latFormat Format of the DMS string, where 'A' is North/South, 'D' is degrees, 'M' is minutes, and 'S' is seconds (38-56-50.8000N would be 'DD-MM-SS.SSSSA').
+   * @param string $lon Longitude string in DMS.
+   * @param string $lonFormat Format of the DMS string, where 'A' is East/West, 'D' is degrees, 'M' is minutes, and 'S' is seconds (077-27-35.8000W would be 'DDD-MM-SS.SSSSA').
+   * @return Coordinate
+   */
   public function handleDMSFormatted(string $lat, string $latFormat, string $lon, string $lonFormat)
   {
     //Find the positions of the identifier in the format string
@@ -50,6 +63,12 @@ class TextHelper
     return $result;
   }
 
+  /**
+   * Finds first occurrence of a string value in a string, along with the length of its occurrence.
+   * @param string $needle The string value being searched for.
+   * @param string $haystack The string to search within.
+   * @return object Object with keys $first, which is the first occurrence of the $needle, and $length, which is the number of occurrences thereafter.
+   */
   private function getPositionsInString(string $needle, string $haystack)
   {
     $result = (object)[];
@@ -65,6 +84,11 @@ class TextHelper
     return $result;
   }
 
+  /**
+   * Checks for FAA seconds strings that do not contain a decimal point.
+   * @param string $number Seconds string to be checked.
+   * @return float Properly formatted seconds string.
+   */
   private function checkSeconds(string $number)
   {
     if (str_contains($number, '.')) {
